@@ -4,7 +4,14 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { TypeBadge, StatusBadge, PriorityBadge } from '../components/StatusBadge';
 import { useAuth } from '../context/useAuth';
-import { getTicketByIdApi, updateTicketApi, deleteTicketApi } from '../api/tickets';
+
+import {
+  getTicketByIdApi,
+  updateTicketApi,
+  deleteTicketApi,
+  getTicketAttachmentApi,
+  uploadTicketAttachmentApi,
+} from '../api/tickets';
 import { getProjectsApi, getProjectMembersApi } from '../api/projects';
 import { getCommentsApi, createCommentApi } from '../api/comments';
 import { formatApiError } from '../api/axios';
@@ -62,6 +69,14 @@ export default function TicketDetailPage() {
   const [replyBody, setReplyBody] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
   const [replyError, setReplyError] = useState(null);
+
+  // Attachment state
+  const [attachmentBlobUrl, setAttachmentBlobUrl] = useState(null);
+  const [loadingAttachment, setLoadingAttachment] = useState(false);
+  const [attachmentError, setAttachmentError] = useState(null);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [attachmentUploadError, setAttachmentUploadError] = useState(null);
+  const [attachmentUploadSuccess, setAttachmentUploadSuccess] = useState(null);
 
   const isViewer = user?.role === 'Viewer';
 
@@ -168,6 +183,100 @@ export default function TicketDetailPage() {
       setReplyError(formatApiError(err));
     } finally {
       setSubmittingReply(false);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // Attachment Preview & Upload
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    let isMounted = true;
+    let objectUrl = null;
+
+    async function fetchAttachmentBlob() {
+      if (!ticket?.attachment_url || !id) {
+        setAttachmentBlobUrl(null);
+        setAttachmentError(null);
+        return;
+      }
+
+      try {
+        setLoadingAttachment(true);
+        setAttachmentError(null);
+        const blob = await getTicketAttachmentApi(id);
+        if (isMounted) {
+          objectUrl = URL.createObjectURL(blob);
+          setAttachmentBlobUrl(objectUrl);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setAttachmentError(formatApiError(err) || 'Failed to load screenshot attachment.');
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingAttachment(false);
+        }
+      }
+    }
+
+    fetchAttachmentBlob();
+
+    return () => {
+      isMounted = false;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [id, ticket?.attachment_url]);
+
+  const canUploadAttachment =
+    Boolean(ticket && user) &&
+    !isViewer &&
+    (user.role === 'Admin' || user.role === 'Developer');
+
+  const handleAttachmentUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setAttachmentUploadError(null);
+    setAttachmentUploadSuccess(null);
+
+    // Validate size (max 5 MB)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      setAttachmentUploadError('File size exceeds the 5 MB limit. Please select a smaller image.');
+      e.target.value = '';
+      return;
+    }
+    if (file.size === 0) {
+      setAttachmentUploadError('Selected file is empty.');
+      e.target.value = '';
+      return;
+    }
+
+    // Validate format (PNG, JPG, JPEG, WEBP)
+    const validExtensions = ['.png', '.jpg', '.jpeg', '.webp'];
+    const validMimes = ['image/png', 'image/jpeg', 'image/webp'];
+    const fileName = file.name.toLowerCase();
+    const hasValidExt = validExtensions.some((ext) => fileName.endsWith(ext));
+    const hasValidMime = validMimes.includes(file.type);
+
+    if (!hasValidExt || !hasValidMime) {
+      setAttachmentUploadError('Invalid image format. Allowed formats: PNG, JPG, JPEG, and WEBP.');
+      e.target.value = '';
+      return;
+    }
+
+    try {
+      setUploadingAttachment(true);
+      const updatedTicket = await uploadTicketAttachmentApi(id, file);
+      setTicket(updatedTicket);
+      setAttachmentUploadSuccess('Screenshot attachment uploaded successfully!');
+    } catch (err) {
+      setAttachmentUploadError(describeActionError(err, 'upload attachment for'));
+    } finally {
+      setUploadingAttachment(false);
+      e.target.value = '';
     }
   };
 
@@ -596,6 +705,143 @@ export default function TicketDetailPage() {
                     <span className="text-slate-400 italic">No description provided for this ticket.</span>
                   )}
                 </div>
+              </div>
+
+              {/* Screenshot Attachment */}
+              <div className="space-y-3 pt-4 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      Screenshot Attachment
+                    </h3>
+                    {ticket.attachment_url && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                        Attached
+                      </span>
+                    )}
+                  </div>
+
+                  {canUploadAttachment && (
+                    <div className="flex items-center gap-2">
+                      <label
+                        htmlFor="screenshot-upload-input"
+                        className={`inline-flex items-center px-3 py-1.5 rounded-lg border text-xs font-semibold transition cursor-pointer ${uploadingAttachment
+                            ? 'border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed'
+                            : 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                          }`}
+                      >
+                        {uploadingAttachment ? (
+                          <>
+                            <svg
+                              className="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-blue-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"
+                              />
+                            </svg>
+                            Uploading...
+                          </>
+                        ) : ticket.attachment_url ? (
+                          'Replace Screenshot'
+                        ) : (
+                          '+ Upload Screenshot'
+                        )}
+                      </label>
+                      <input
+                        id="screenshot-upload-input"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+                        disabled={uploadingAttachment}
+                        onChange={handleAttachmentUpload}
+                        className="sr-only"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Upload Success Alert */}
+                {attachmentUploadSuccess && (
+                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+                    <span>{attachmentUploadSuccess}</span>
+                    <button
+                      type="button"
+                      onClick={() => setAttachmentUploadSuccess(null)}
+                      className="text-emerald-600 hover:text-emerald-800 font-bold ml-2 cursor-pointer"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+
+                {/* Upload Error Alert */}
+                {attachmentUploadError && (
+                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between">
+                    <span>{attachmentUploadError}</span>
+                    <button
+                      type="button"
+                      onClick={() => setAttachmentUploadError(null)}
+                      className="text-red-600 hover:text-red-800 font-bold ml-2 cursor-pointer"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+
+                {/* Attachment Preview Box */}
+                {loadingAttachment ? (
+                  <div className="p-6 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                    <p className="text-xs text-slate-500 font-medium">Loading secure attachment preview...</p>
+                  </div>
+                ) : attachmentError ? (
+                  <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-xs text-red-700">
+                    <span>{attachmentError}</span>
+                  </div>
+                ) : attachmentBlobUrl ? (
+                  <div className="space-y-2">
+                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 inline-block max-w-full">
+                      <img
+                        src={attachmentBlobUrl}
+                        alt="Ticket Screenshot"
+                        className="max-h-80 w-auto rounded-lg object-contain shadow-xs hover:shadow-md transition"
+                      />
+                    </div>
+                    <div className="flex items-center gap-3 text-xs">
+                      <a
+                        href={attachmentBlobUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        Open Full Size
+                      </a>
+                      <span className="text-slate-300">•</span>
+                      <a
+                        href={attachmentBlobUrl}
+                        download={`ticket-${ticket.id}-screenshot`}
+                        className="font-semibold text-slate-600 hover:text-slate-800 hover:underline"
+                      >
+                        Download
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-xs text-slate-400 italic">
+                    No screenshot attached to this ticket.
+                    {canUploadAttachment && ' Supported formats: PNG, JPG, JPEG, WEBP (up to 5 MB).'}
+                  </div>
+                )}
               </div>
 
               {/* Attributes Grid */}

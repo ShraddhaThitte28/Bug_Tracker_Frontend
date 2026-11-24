@@ -57,4 +57,26 @@ export async function deleteTicketApi(ticketId) {
   return response.data;
 }
 
+/**
+ * Upload a screenshot / image attachment to a ticket.
+ * Uses POST /tickets/{ticket_id}/attachment with FormData containing 'file'.
+ * Returns the updated TicketResponse.
+ */
+export async function uploadTicketAttachmentApi(ticketId, file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await api.post(`/tickets/${ticketId}/attachment`, formData);
+  return response.data;
+}
 
+/**
+ * Fetch a ticket's screenshot attachment securely as a binary Blob.
+ * Uses GET /tickets/{ticket_id}/attachment with JWT authentication.
+ * Returns the Blob.
+ */
+export async function getTicketAttachmentApi(ticketId) {
+  const response = await api.get(`/tickets/${ticketId}/attachment`, {
+    responseType: 'blob',
+  });
+  return response.data;
+}
