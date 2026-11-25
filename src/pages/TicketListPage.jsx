@@ -268,7 +268,7 @@ export default function TicketListPage() {
               <option value="">All Projects</option>
               {projectsList.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name}
+                  {p.name} (ID: #{p.id})
                 </option>
               ))}
             </select>
