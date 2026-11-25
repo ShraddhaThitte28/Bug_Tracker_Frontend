@@ -65,6 +65,7 @@ export async function deleteTicketApi(ticketId) {
 export async function uploadTicketAttachmentApi(ticketId, file) {
   const formData = new FormData();
   formData.append('file', file);
+
   const response = await api.post(`/tickets/${ticketId}/attachment`, formData);
   return response.data;
 }
