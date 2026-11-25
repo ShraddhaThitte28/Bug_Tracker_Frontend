@@ -77,6 +77,7 @@ export default function TicketDetailPage() {
   const [uploadingAttachment, setUploadingAttachment] = useState(false);
   const [attachmentUploadError, setAttachmentUploadError] = useState(null);
   const [attachmentUploadSuccess, setAttachmentUploadSuccess] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const isViewer = user?.role === 'Viewer';
 
@@ -228,6 +229,22 @@ export default function TicketDetailPage() {
       }
     };
   }, [id, ticket?.attachment_url]);
+
+  // Close image modal when pressing Escape
+  useEffect(() => {
+    if (!showImageModal) return;
+
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        setShowImageModal(false);
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showImageModal]);
 
   const canUploadAttachment =
     Boolean(ticket && user) &&
@@ -814,18 +831,17 @@ export default function TicketDetailPage() {
                       <img
                         src={attachmentBlobUrl}
                         alt="Ticket Screenshot"
-                        className="max-h-80 w-auto rounded-lg object-contain shadow-xs hover:shadow-md transition"
+                        className="max-h-80 w-auto rounded-lg object-contain shadow-xs hover:shadow-md transition cursor-pointer"
                       />
                     </div>
                     <div className="flex items-center gap-3 text-xs">
-                      <a
-                        href={attachmentBlobUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                      <button
+                        type="button"
+                        onClick={() => setShowImageModal(true)}
+                        className="font-semibold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                       >
                         Open Full Size
-                      </a>
+                      </button>
                       <span className="text-slate-300">•</span>
                       <a
                         href={attachmentBlobUrl}
@@ -1115,6 +1131,42 @@ export default function TicketDetailPage() {
                   {deleting ? 'Deleting...' : 'Delete Ticket'}
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Full Size Screenshot Lightbox Modal */}
+        {showImageModal && attachmentBlobUrl && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 sm:p-6"
+            onClick={() => setShowImageModal(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Full size screenshot lightbox"
+          >
+            {/* Close (X) button in top-right corner */}
+            <button
+              type="button"
+              onClick={() => setShowImageModal(false)}
+              className="absolute top-4 right-4 z-50 p-2.5 text-white/80 hover:text-white bg-black/60 hover:bg-black/90 rounded-full transition cursor-pointer focus:outline-hidden"
+              aria-label="Close full size view"
+              title="Close (Esc)"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Modal Image Container - stops click propagation so clicking inside does not close modal */}
+            <div
+              className="relative max-w-full max-h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={attachmentBlobUrl}
+                alt={`Screenshot for ticket #${ticket?.id || id}`}
+                className="max-h-[88vh] max-w-[92vw] rounded-lg object-contain shadow-2xl"
+              />
             </div>
           </div>
         )}
