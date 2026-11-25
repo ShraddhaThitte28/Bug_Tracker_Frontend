@@ -518,10 +518,14 @@ export default function DashboardPage() {
                   ) : (
                     <div className="divide-y divide-slate-100">
                       {projects.map((project) => (
-                        <div key={project.id} className="p-4 sm:p-5 hover:bg-slate-50/75 transition">
+                        <Link
+                          key={project.id}
+                          to={`/tickets?project_id=${project.id}`}
+                          className="block p-4 sm:p-5 hover:bg-slate-50 transition cursor-pointer group"
+                        >
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <div className="font-semibold text-slate-900 text-sm">
+                              <div className="font-semibold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
                                 {project.name}
                               </div>
                               <div className="text-xs text-slate-500 font-mono mt-0.5">
@@ -537,10 +541,14 @@ export default function DashboardPage() {
                               {project.description}
                             </p>
                           )}
-                          <div className="mt-3 text-xs text-slate-400">
-                            Created: {formatDate(project.created_at)}
+                          <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+                            <span>Created: {formatDate(project.created_at)}</span>
+                            <span className="font-semibold text-blue-600 group-hover:underline flex items-center space-x-1">
+                              <span>View Tickets</span>
+                              <span>→</span>
+                            </span>
                           </div>
-                        </div>
+                        </Link>
                       ))}
                     </div>
                   )}

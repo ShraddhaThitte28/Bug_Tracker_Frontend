@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { getTicketsApi } from '../api/tickets';
 import { getProjectsApi } from '../api/projects';
@@ -9,6 +9,9 @@ import { useAuth } from '../context/useAuth';
 
 export default function TicketListPage() {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedProject = searchParams.get('project_id') || '';
+
   const [tickets, setTickets] = useState([]);
   const [projectsMap, setProjectsMap] = useState({});
   const [projectsList, setProjectsList] = useState([]);
@@ -18,7 +21,6 @@ export default function TicketListPage() {
   // Filter and search state
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [selectedProject, setSelectedProject] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('');
   const [selectedType, setSelectedType] = useState('');
@@ -150,10 +152,26 @@ export default function TicketListPage() {
   const handleClearFilters = () => {
     setSearchTerm('');
     setDebouncedSearch('');
-    setSelectedProject('');
     setSelectedStatus('');
     setSelectedPriority('');
     setSelectedType('');
+    setSearchParams({}, { replace: true });
+  };
+
+  const handleProjectChange = (e) => {
+    const val = e.target.value;
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (val) {
+          next.set('project_id', val);
+        } else {
+          next.delete('project_id');
+        }
+        return next;
+      },
+      { replace: true }
+    );
   };
 
   const formatDate = (dateString) => {
@@ -244,7 +262,7 @@ export default function TicketListPage() {
             {/* Project Dropdown */}
             <select
               value={selectedProject}
-              onChange={(e) => setSelectedProject(e.target.value)}
+              onChange={handleProjectChange}
               className="px-3 py-2 rounded-lg border border-slate-300 text-xs sm:text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer text-slate-700"
             >
               <option value="">All Projects</option>
