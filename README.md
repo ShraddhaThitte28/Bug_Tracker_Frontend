@@ -1,102 +1,120 @@
 # Bug Tracker / Issue Tracker — Frontend Client Application
 
-> **Live Application:** [https://bugtrackerfrontend-production.up.railway.app](https://bugtrackerfrontend-production.up.railway.app)  
-> **Backend API:** [https://web-production-3d715c7b.up.railway.app](https://web-production-3d715c7b.up.railway.app)  
-> **Frontend Repository:** [https://github.com/ShraddhaThitte28/Bug_Tracker_Frontend](https://github.com/ShraddhaThitte28/Bug_Tracker_Frontend)  
-> **Backend Repository:** [https://github.com/ShraddhaThitte28/Bug_Tracker_Backend](https://github.com/ShraddhaThitte28/Bug_Tracker_Backend)
+> **A responsive Single-Page Application (SPA) built with React 19, Vite, and Tailwind CSS for defect tracking and agile workflow management.**
 
 ---
 
 ## Table of Contents
 1. [Project Overview](#1-project-overview)
-2. [Key Features](#2-key-features)
-3. [Technology Stack & Dependencies](#3-technology-stack--dependencies)
-4. [Project Folder Structure](#4-project-folder-structure)
-5. [Backend API Integration](#5-backend-api-integration)
-6. [Installation & Setup](#6-installation--setup)
-7. [Environment Configuration](#7-environment-configuration)
-8. [Available Scripts & Commands](#8-available-scripts--commands)
-9. [Deployment](#9-deployment)
+2. [Project Links](#2-project-links)
+3. [Problem Statement & Background](#3-problem-statement--background)
+4. [Technology Stack & Key Dependencies](#4-technology-stack--key-dependencies)
+5. [Key Features & Frontend Modules](#5-key-features--frontend-modules)
+6. [Project Folder Structure](#6-project-folder-structure)
+7. [Backend API Integration](#7-backend-api-integration)
+8. [Application Screenshots](#8-application-screenshots)
+9. [Installation & Setup](#9-installation--setup)
+10. [Environment Configuration](#10-environment-configuration)
+11. [Available Scripts & Commands](#11-available-scripts--commands)
+12. [Deployment Instructions](#12-deployment-instructions)
+13. [Conclusion](#13-conclusion)
 
 ---
 
 ## 1. Project Overview
-The **Bug Tracker / Issue Tracker** frontend is a single-page web application (SPA) built with **React 19**, **Vite**, and **Tailwind CSS**. It provides a clean, responsive interface for agile teams to manage software projects, track issues, assign tasks, collaborate through comments, and visualize workflows on a Kanban board.
+The **Bug Tracker / Issue Tracker** frontend is a single-page web application engineered for software teams to log, triage, assign, and track defects and operational tasks. Developed with **React 19**, **Vite**, and **Tailwind CSS v4**, the interface features client-side routing via **React Router 7**, role-based permission visibility (**Admin**, **Developer**, **Viewer**), an interactive drag-and-drop **Kanban Board** (`@dnd-kit`), filterable ticket directories, an in-page modal screenshot lightbox, and threaded comment feeds.
 
 ---
 
-## 2. Key Features
+## 2. Project Links
 
-- **Authentication & User Management:**
-  - User registration and login forms with password visibility toggles.
-  - JWT storage in `localStorage` with automatic Authorization header injection.
-  - Automatic session cleanup and redirect to `/login` upon receiving `401 Unauthorized` responses.
-  - Role-based UI visibility distinguishing **Admin**, **Developer**, and **Viewer** accounts.
-
-- **Operational Dashboard:**
-  - Real-time ticket count metrics (**Total**, **To Do**, **In Progress**, **Done**).
-  - Breakdown of tickets by priority (**High**, **Medium**, **Low**).
-  - Quick-navigation cards for creating tickets, browsing the list, or opening the Kanban board.
-
-- **Interactive Kanban Board:**
-  - Three workflow columns: `To Do`, `In Progress`, and `Done`.
-  - Drag-and-drop card movement powered by `@dnd-kit/core` and `@dnd-kit/utilities`.
-  - Immediate optimistic status update with backend synchronization (`PUT /tickets/{id}`).
-
-- **Ticket Directory & Filtering:**
-  - Filterable list of tickets with project selection, search, and status badges.
-  - Ticket authoring form supporting project selection, title, description, issue type, priority, and assignee.
-
-- **Ticket Detail & In-Page Lightbox Modal:**
-  - Detailed ticket metadata view (status, priority, project, reporter, assignee, timestamps).
-  - Status and priority updating, ticket editing, and deletion (restricted by role).
-  - Screenshot attachment preview with an in-page modal lightbox supporting centered full-size viewing, backdrop click-to-close, visible close button, and `Escape` key dismissal.
-
-- **Ticket Comments & Activity Feed:**
-  - Chronological comment list for each ticket.
-  - Top-level comment submission.
-  - One-level threaded replies under top-level comments (`parent_id`).
+| Resource | Target Link |
+|---|---|
+| **Frontend GitHub Repository** | [https://github.com/ShraddhaThitte28/Bug_Tracker_Frontend](https://github.com/ShraddhaThitte28/Bug_Tracker_Frontend) |
+| **Backend GitHub Repository** | [https://github.com/ShraddhaThitte28/Bug_Tracker_Backend](https://github.com/ShraddhaThitte28/Bug_Tracker_Backend) |
+| **Live Frontend Application** | [https://bugtrackerfrontend-production.up.railway.app](https://bugtrackerfrontend-production.up.railway.app) |
+| **Backend REST API** | [https://web-production-3d715c7b.up.railway.app](https://web-production-3d715c7b.up.railway.app) |
+| **Backend Health Check** | [https://web-production-3d715c7b.up.railway.app/health](https://web-production-3d715c7b.up.railway.app/health) |
+| **Interactive Swagger API Docs** | [https://web-production-3d715c7b.up.railway.app/docs](https://web-production-3d715c7b.up.railway.app/docs) |
+| **Complete Project Documentation** | [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md) |
 
 ---
 
-## 3. Technology Stack & Dependencies
+## 3. Problem Statement & Background
 
-### Production Dependencies (`package.json`)
+### Problem Statement
+Software development teams face operational friction when bug reporting and task delegation are managed through ad-hoc channels such as spreadsheets or email threads. Key challenges include:
+1. **Lack of Centralized Visibility:** Stakeholders cannot rapidly determine which defects block active release milestones.
+2. **Ambiguous Status Workflows:** Without strict state transitions, tickets remain abandoned or duplicate debugging occurs.
+3. **Loss of Collaborative Context:** Discussions and reproduction screenshots become detached from the issue ticket.
+4. **Poor Usability:** Clunky legacy tracking tools degrade developer velocity and hinder team adoption.
 
-| Package | Version | Purpose |
-|---|---|---|
-| **react** | `^19.3.1` | Core UI component library |
-| **react-dom** | `^19.3.1` | React DOM rendering bindings |
-| **react-router-dom** | `^7.18.5` | Client-side routing and protected route wrappers |
-| **@dnd-kit/core** | `^6.3.1` | Drag-and-drop sensors, collision detection, and drop targets |
-| **@dnd-kit/utilities** | `^3.2.2` | CSS transform and coordinate utilities for draggable cards |
-| **axios** | `^1.21.1` | Promise-based HTTP client with request/response interceptors |
-| **tailwindcss** | `^4.3.5` | Utility-first CSS framework |
-| **@tailwindcss/vite** | `^4.3.5` | Tailwind CSS v4 compiler plugin for Vite |
-| **serve** | `^14.2.8` | Static web server used for production hosting |
-
-### Development Dependencies (`devDependencies`)
-
-| Package | Version | Purpose |
-|---|---|---|
-| **vite** | `^8.3.6` | Development server and production bundler |
-| **@vitejs/plugin-react** | `^6.1.2` | React Fast Refresh support for Vite |
-| **eslint** | `^10.14.0` | JavaScript code linter |
-| **eslint-plugin-react-hooks** | `^7.1.1` | Linting rules for React Hooks |
-| **eslint-plugin-react-refresh** | `^0.5.7` | Fast refresh validation |
-| **@eslint/js** | `^10.0.1` | ESLint recommended configuration rules |
-| **@types/react** | `^19.3.0` | TypeScript definitions for React |
-| **@types/react-dom** | `^19.3.0` | TypeScript definitions for React DOM |
-| **globals** | `^17.13.0` | Global browser identifiers for ESLint |
+### Background
+Modern engineering teams benefit from visual task tracking (such as Kanban boards) to manage work-in-progress (WIP). This client application provides an intuitive interface that eliminates full-page reloads, updates local UI state optimistically, and protects private routes through authenticated session guards.
 
 ---
 
-## 4. Project Folder Structure
+## 4. Technology Stack & Key Dependencies
+
+### Core Technologies & Selection Rationale
+
+| Technology | Actual Version | Purpose in Application | Justification / Reason for Selection |
+|---|---|---|---|
+| **React** | `^19.3.1` | Core UI Library | Component-driven architecture, declarative state models, and concurrent rendering ensure smooth updates and modular code reusability. |
+| **Vite** | `^8.3.6` | Build Tool & Dev Server | Fast Hot Module Replacement (HMR) during development and generates highly optimized Rollup production bundles. |
+| **Tailwind CSS** | `^4.3.5` | Styling & Design System | Utility-first CSS framework enabling consistent spacing, typography, and responsive grid layouts without runtime CSS overhead. |
+| **React Router** | `^7.18.5` | Client-Side Routing | Declarative routing engine supporting protected route wrappers, dynamic parameter matching (`/tickets/:id`), and browser history synchronization. |
+| **Axios** | `^1.21.1` | HTTP Client | Promise-based client offering centralized interceptors for Bearer token attachment, unified error parsing, and FormData upload boundary handling. |
+| **@dnd-kit/core** | `^6.3.1` | Drag & Drop Engine | Lightweight, modular, accessible drag-and-drop toolkit purpose-built for React without external legacy dependencies. |
+| **@dnd-kit/utilities** | `^3.2.2` | Drag Transform Helpers | Hardware-accelerated CSS transform calculations and coordinate utilities for smooth Kanban card animations. |
+| **serve** | `^14.2.8` | Static Web Server | Lightweight server used in production environments to host the compiled single-page application and route rewrites. |
+
+### Development Dependencies
+- **`vite` (`^8.3.6`) & `@vitejs/plugin-react` (`^6.1.2`):** Bundling, development server, and Fast Refresh support.
+- **`eslint` (`^10.14.0`), `eslint-plugin-react-hooks` (`^7.1.1`), `eslint-plugin-react-refresh` (`^0.5.7`):** Code quality enforcement and React hook correctness validation.
+
+---
+
+## 5. Key Features & Frontend Modules
+
+### 1. Authentication & Session Module (`src/context/AuthContext.jsx`, `src/pages/LoginPage.jsx`, `RegisterPage.jsx`)
+- User registration and login forms with real-time field validation and show/hide password visibility toggles.
+- JWT storage in `localStorage` with automatic Authorization header injection across requests.
+- Automatic session cleanup and redirect to `/login` upon receiving `401 Unauthorized` responses.
+- Role-based UI visibility distinguishing **Admin**, **Developer**, and **Viewer** accounts.
+
+### 2. Operational Dashboard (`src/pages/DashboardPage.jsx`)
+- Real-time ticket count metrics (**Total**, **To Do**, **In Progress**, **Done**).
+- Breakdown of tickets by priority (**High**, **Medium**, **Low**).
+- Quick-navigation cards for creating tickets, browsing the directory, or opening project-specific boards.
+
+### 3. Interactive Kanban Board (`src/pages/KanbanBoardPage.jsx`)
+- Three workflow columns: `To Do`, `In Progress`, and `Done`.
+- Drag-and-drop card movement powered by `@dnd-kit/core` and `@dnd-kit/utilities`.
+- Immediate optimistic status updates synchronized with the backend via `PUT /tickets/{id}`.
+
+### 4. Ticket Directory & Filtering (`src/pages/TicketListPage.jsx`, `TicketCreatePage.jsx`)
+- Filterable list of tickets with project selection dropdown, status badges, and search filtering.
+- Ticket authoring form supporting project selection, title, description, issue type (`Bug`, `Task`, `Feature`), priority (`Low`, `Medium`, `High`), and assignee assignment.
+
+### 5. Ticket Detail & In-Page Lightbox Modal (`src/pages/TicketDetailPage.jsx`)
+- Detailed ticket metadata view (status, priority, project, reporter, assignee, timestamps).
+- Status and priority updating, ticket editing, and deletion (restricted by role).
+- Screenshot attachment preview with an in-page modal lightbox supporting centered full-size viewing, backdrop click-to-close, visible top-right close button, and `Escape` key dismissal.
+
+### 6. Ticket Comments & Activity Feed (`src/pages/TicketDetailPage.jsx`, `src/api/comments.js`)
+- Chronological comment list for each ticket.
+- Top-level comment submission.
+- One-level threaded replies under top-level comments (`parent_id`).
+
+---
+
+## 6. Project Folder Structure
 
 ```text
 frontend/
 ├── dist/                          # Production build output
-├── public/                        # Static assets served as-is
+├── public/                        # Static assets served as-is (favicons, SVGs)
 ├── src/
 │   ├── api/                       # API client and domain endpoint modules
 │   │   ├── auth.js                # Authentication API calls (login, register, me)
@@ -128,6 +146,13 @@ frontend/
 │   ├── App.jsx                    # Root router configuration
 │   ├── index.css                  # Tailwind CSS root imports
 │   └── main.jsx                   # React application entry point
+├── docs/                          # Comprehensive documentation
+│   ├── PROJECT_DOCUMENTATION.md   # Single complete project documentation file
+│   └── screenshots/               # Application UI screen captures
+│       ├── 01_login_page.png      # Captured sign-in page view
+│       ├── 02_register_page.png   # Captured registration page view
+│       ├── 10_swagger_docs.png    # Captured Swagger API view
+│       └── hero.png               # Sign-in illustration asset
 ├── .env.example                   # Example environment variable template
 ├── index.html                     # HTML entry point
 ├── package.json                   # Project dependencies and script declarations
@@ -137,7 +162,7 @@ frontend/
 
 ---
 
-## 5. Backend API Integration
+## 7. Backend API Integration
 
 The frontend connects to the backend REST API via Axios.
 
@@ -201,7 +226,43 @@ export default api;
 
 ---
 
-## 6. Installation & Setup
+## 8. Application Screenshots
+
+Genuine application screenshots are organized in `docs/screenshots/`:
+
+### Captured Application Views
+
+#### User Sign In Screen
+![Sign In Screen](docs/screenshots/01_login_page.png)
+*Caption: Live Sign In view showing credentials entry form with password visibility toggle.*
+
+#### User Registration Screen
+![User Registration](docs/screenshots/02_register_page.png)
+*Caption: Live Registration form showing username, email, and password confirmation fields.*
+
+#### Interactive Swagger Documentation
+![Swagger Documentation](docs/screenshots/10_swagger_docs.png)
+*Caption: Live OpenAPI/Swagger explorer showing all 22 registered REST endpoints with token authorization.*
+
+### Application Screenshots Inventory
+
+| Screenshot Reference | Screen Name | Functional Explanation | Status |
+|---|---|---|:---:|
+| `docs/screenshots/hero.png` | **Login Hero Asset** | Visual branding artwork featured on the user sign-in screen. | **Available** |
+| `docs/screenshots/01_login_page.png` | **Sign In View** | Email and password credentials entry with validation feedback. | **Available** |
+| `docs/screenshots/02_register_page.png` | **Sign Up View** | Registration form with username, email, and password confirmation. | **Available** |
+| `docs/screenshots/10_swagger_docs.png` | **Swagger API UI** | Interactive OpenAPI documentation explorer with Authorize button. | **Available** |
+| `docs/screenshots/03_dashboard_page.png` | **Analytics Dashboard** | Overview statistics cards (Total, To Do, In Progress, Done) and priority breakdown. | *Pending Capture* |
+| `docs/screenshots/04_ticket_list.png` | **Ticket Directory** | Filterable table showing ticket IDs, titles, colored status badges, priority, and assignees. | *Pending Capture* |
+| `docs/screenshots/05_kanban_board.png` | **Kanban Board** | Three-column workflow board (To Do, In Progress, Done) with interactive task cards. | *Pending Capture* |
+| `docs/screenshots/06_ticket_detail.png` | **Ticket Detail & Comments** | Detailed view displaying full ticket metadata, action buttons, and threaded comments feed. | *Pending Capture* |
+| `docs/screenshots/07_lightbox_modal.png` | **Screenshot Lightbox** | In-page modal displaying full screenshot with dark backdrop and close controls. | *Pending Capture* |
+| `docs/screenshots/08_comments_feed.png` | **Threaded Comments** | Discussion thread with top-level comments and one-level reply forms. | *Pending Capture* |
+| `docs/screenshots/09_create_ticket.png` | **Ticket Authoring** | Form allowing project selection, assignee designation, priority, and rich description. | *Pending Capture* |
+
+---
+
+## 9. Installation & Setup
 
 ### Prerequisites
 - **Node.js:** `v18.0.0` or higher (Node 20+ recommended)
@@ -219,7 +280,7 @@ export default api;
 
 ---
 
-## 7. Environment Configuration
+## 10. Environment Configuration
 
 Create a `.env` file in the `frontend/` directory (or copy from `.env.example`):
 
@@ -236,7 +297,7 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 
 ---
 
-## 8. Available Scripts & Commands
+## 11. Available Scripts & Commands
 
 Run these scripts from the `frontend/` directory:
 
@@ -250,9 +311,14 @@ Run these scripts from the `frontend/` directory:
 
 ---
 
-## 9. Deployment
+## 12. Deployment Instructions
 
 - **Production Frontend:** [https://bugtrackerfrontend-production.up.railway.app](https://bugtrackerfrontend-production.up.railway.app)
 - **Deployment Platform:** Railway (Static SPA hosting via `serve`)
 - **Production Build Command:** `npm run build`
 - **Start Command:** `serve -s dist -l $PORT`
+
+---
+
+## 13. Conclusion
+The **Bug Tracker / Issue Tracker Frontend** delivers a component-driven Single-Page Application that balances security, velocity, and usability. By leveraging **React 19**, **Tailwind CSS v4**, and **@dnd-kit**, the application provides intuitive drag-and-drop state transitions, responsive filtering, secure screenshot modal previews, and threaded team discussions, serving as an effective user interface for agile issue management.
