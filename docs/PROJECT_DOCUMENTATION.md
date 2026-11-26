@@ -234,7 +234,7 @@ frontend/
 │   │   ├── comments.js            # getCommentsApi, createCommentApi
 │   │   ├── projects.js            # getProjectsApi, createProjectApi, members
 │   │   └── tickets.js             # getTicketsApi, createTicketApi, update, uploads
-│   ├── assets/                    # Illustrations (hero.png) and vector logos
+│   ├── assets/                    # Static image assets and vector logos
 │   ├── components/                # Shared reusable UI elements
 │   │   ├── Navbar.jsx             # Global header with navigation and user badge
 │   │   ├── ProtectedRoute.jsx     # Route authentication guard
@@ -530,29 +530,61 @@ Genuine application screenshots captured from the live deployment and asset file
 ![User Registration](screenshots/02_register_page.png)
 *Caption: Live Registration form showing username, email, and password confirmation fields.*
 
-#### 3. Interactive Swagger Documentation
+#### 3. Operational Dashboard (Upper Metrics & Lower Priority Sections)
+![Operational Dashboard - Overview](screenshots/03_dashboard_page.png)
+*Caption: Operational Dashboard upper section displaying metric cards (Total, To Do, In Progress, Done) and quick project access.*
+
+![Operational Dashboard - Lower Section](screenshots/03_dashboard_lower_section.png)
+*Caption: Operational Dashboard lower section displaying ticket priority breakdown charts and recent issue activity.*
+
+#### 4. Ticket Directory Table
+![Ticket Directory](screenshots/04_ticket_list.png)
+*Caption: Tabular ticket directory with search filtering, colored status badges, priority tags, and assignee columns.*
+
+#### 5. Interactive Kanban Board
+![Kanban Board](screenshots/05_kanban_board.png)
+*Caption: Interactive workflow board with drag-and-drop ticket cards organized across workflow stages.*
+
+#### 6. Ticket Inspection & Details View
+![Ticket Inspection View](screenshots/06_ticket_detail.png)
+*Caption: Detailed ticket view displaying complete issue metadata, status updater, assignee details, and description.*
+
+#### 7. Ticket Attachment Preview
+![Ticket Attachment Preview](screenshots/07_ticket_attachment.png)
+*Caption: Uploaded screenshot attachment preview displayed within the ticket inspector.*
+
+#### 8. Threaded Comments & Activity Feed
+![Threaded Comments](screenshots/08_comments_feed.png)
+*Caption: Team discussion feed featuring threaded comments and reply authoring form.*
+
+#### 9. Ticket Creation Interface
+![Ticket Creation Form](screenshots/09_create_ticket.png)
+*Caption: Issue creation modal form with project selector, title, type, priority, assignee, and description inputs.*
+
+#### 10. Interactive Swagger Documentation
 ![Swagger Documentation](screenshots/10_swagger_docs.png)
 *Caption: Live OpenAPI/Swagger explorer showing all 22 registered REST endpoints with token authorization.*
 
-#### 4. Application Hero Artwork
-![Hero Artwork](screenshots/hero.png)
-*Caption: Vector illustration asset featured on the user authentication interface.*
+#### 11. Screenshot Lightbox Modal
+![Screenshot Lightbox Modal](screenshots/11_lightbox_modal.png)
+*Caption: In-page modal displaying full screenshot with dark backdrop and close controls.*
 
 ### Application Screenshots Inventory & Status
 
 | Screenshot Reference | Screen Name | Functional Explanation | Status |
 |---|---|---|:---:|
-| `screenshots/hero.png` | **Application Hero Artwork** | Visual branding asset displayed on the user sign-in page. | **Available** |
 | `screenshots/01_login_page.png` | **Sign In View** | Email and password inputs with password visibility toggle and error alerts. | **Available** |
 | `screenshots/02_register_page.png` | **Registration View** | Account creation form with username, email, and password confirmation. | **Available** |
+| `screenshots/03_dashboard_page.png` | **Operational Dashboard** | Statistics cards (Total, To Do, In Progress, Done) and project quick access. | **Available** |
+| `screenshots/03_dashboard_lower_section.png` | **Dashboard Priority & Activity** | Ticket priority breakdown charts and recent issue activity stream. | **Available** |
+| `screenshots/04_ticket_list.png` | **Ticket Directory** | Tabular directory with status badges, priority tags, and filter controls. | **Available** |
+| `screenshots/05_kanban_board.png` | **Kanban Board** | Three-column workflow board with interactive drag-and-drop cards. | **Available** |
+| `screenshots/06_ticket_detail.png` | **Ticket Inspection View** | Metadata details, status editor, assignee details, and delete controls. | **Available** |
+| `screenshots/07_ticket_attachment.png` | **Attachment Preview** | Uploaded screenshot attachment preview displayed within the ticket inspector. | **Available** |
+| screenshots/11_lightbox_modal.png | **Screenshot Lightbox Modal** | In-page modal displaying full screenshot with dark backdrop and close controls. | **Available** |
+| `screenshots/08_comments_feed.png` | **Threaded Comments** | Discussion thread with top-level comments and one-level reply forms. | **Available** |
+| `screenshots/09_create_ticket.png` | **Ticket Creation Form** | Authoring interface with project, type, priority, and assignee selectors. | **Available** |
 | `screenshots/10_swagger_docs.png` | **Interactive Swagger UI** | OpenAPI documentation explorer with token authorization button. | **Available** |
-| `screenshots/03_dashboard_page.png` | **Operational Dashboard** | Statistics cards (Total, To Do, In Progress, Done) and priority breakdown. | *Pending Capture* (Requires Authenticated Session) |
-| `screenshots/04_ticket_list.png` | **Ticket Directory** | Tabular directory with status badges, priority tags, and filter controls. | *Pending Capture* (Requires Authenticated Session) |
-| `screenshots/05_kanban_board.png` | **Kanban Board** | Three-column workflow board with interactive drag-and-drop cards. | *Pending Capture* (Requires Authenticated Session) |
-| `screenshots/06_ticket_detail.png` | **Ticket Inspection View** | Metadata details, status editor, and delete controls. | *Pending Capture* (Requires Authenticated Session) |
-| `screenshots/07_lightbox_modal.png` | **Screenshot Lightbox** | Centered full-size image modal with dark backdrop and close controls. | *Pending Capture* (Requires Authenticated Session) |
-| `screenshots/08_comments_feed.png` | **Threaded Comments** | Discussion thread with top-level comments and one-level reply forms. | *Pending Capture* (Requires Authenticated Session) |
-| `screenshots/09_create_ticket.png` | **Ticket Creation Form** | Authoring interface with project, type, priority, and assignee selectors. | *Pending Capture* (Requires Authenticated Session) |
 
 ---
 
